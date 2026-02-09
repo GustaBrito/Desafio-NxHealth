@@ -1,0 +1,13 @@
+﻿# Build
+**/bin/
+**/obj/
+
+# Node
+**/node_modules/
+
+# Vite
+**/dist/
+
+# OS
+.DS_Store
+Thumbs.db
