@@ -1,5 +1,6 @@
 ﻿import { useState } from "react";
 import { validarPessoa } from "../utils/validacoes";
+import { aplicarMascaraCpfCnpj, aplicarMascaraTelefone } from "../utils/mascaras";
 
 export default function PessoaForm({
   initialValues,
@@ -13,7 +14,14 @@ export default function PessoaForm({
 
   function handleChange(event) {
     const { name, value } = event.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    let nextValue = value;
+    if (name === "cpfCnpj") {
+      nextValue = aplicarMascaraCpfCnpj(value);
+    }
+    if (name === "telefone") {
+      nextValue = aplicarMascaraTelefone(value);
+    }
+    setForm((prev) => ({ ...prev, [name]: nextValue }));
   }
 
   function handleSubmit(event) {
