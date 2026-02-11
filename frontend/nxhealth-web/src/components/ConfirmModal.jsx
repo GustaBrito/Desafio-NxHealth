@@ -1,4 +1,4 @@
-﻿import "./ConfirmModal.css";
+import "./ConfirmModal.css";
 
 export default function ConfirmModal({
   aberto,
@@ -12,7 +12,7 @@ export default function ConfirmModal({
   }
 
   return (
-    <div className="modal d-block confirm-modal" tabIndex="-1" role="dialog">
+    <div className="modal d-block modal-confirmacao" tabIndex="-1" role="dialog">
       <div className="modal-dialog" role="document">
         <div className="modal-content">
           <div className="modal-header">
@@ -35,3 +35,4 @@ export default function ConfirmModal({
     </div>
   );
 }
+

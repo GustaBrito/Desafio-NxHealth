@@ -32,8 +32,8 @@ export default function CriarPessoa() {
   }
 
   return (
-    <div className="nx-page">
-      <div className="nx-card">
+    <div className="pagina-cadastro">
+      <div className="cartao-cadastro">
         <PessoaForm
           initialValues={FORM_EMPTY_VALUES}
           onSubmit={handleSubmit}
@@ -47,3 +47,4 @@ export default function CriarPessoa() {
     </div>
   );
 }
+

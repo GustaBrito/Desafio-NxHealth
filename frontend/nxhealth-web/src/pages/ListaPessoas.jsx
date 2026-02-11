@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ConfirmModal from "../components/ConfirmModal";
 import PessoasTable from "../components/PessoasTable";
@@ -106,8 +106,8 @@ export default function ListaPessoas() {
   const pessoasPaginadas = pessoasOrdenadas.slice(inicio, fim);
 
   return (
-    <div className="nx-page">
-      <div className="nx-header">
+    <div className="pagina-cadastro">
+      <div className="cabecalho-cadastro">
         <div>
           <h1>Cadastro de pessoas</h1>
           <span>Cadastros / Pessoas</span>
@@ -117,29 +117,31 @@ export default function ListaPessoas() {
         </button>
       </div>
 
-      <div className="nx-card nx-search">
-        <div className="nx-card-title">Pesquisa</div>
-        <div className="nx-search-grid">
-          <div>
-            <label className="form-label">Nome</label>
-            <input
-              className="form-control"
-              value={filtroNome}
-              onChange={(event) => setFiltroNome(event.target.value)}
-            />
-          </div>
-          <div>
-            <label className="form-label">CPF</label>
-            <input
-              className="form-control"
-              value={filtroCpf}
-              onChange={(event) => setFiltroCpf(event.target.value)}
-            />
-          </div>
-          <div className="nx-search-actions">
-            <button type="button" className="btn btn-outline-secondary" onClick={aplicarFiltro}>
-              Filtrar
-            </button>
+      <div className="cartao-cadastro pesquisa-cadastro">
+        <div className="conteudo-pesquisa">
+          <div className="titulo-cartao">Pesquisa</div>
+          <div className="grade-pesquisa">
+            <div>
+              <label className="form-label">Nome</label>
+              <input
+                className="form-control"
+                value={filtroNome}
+                onChange={(event) => setFiltroNome(event.target.value)}
+              />
+            </div>
+            <div>
+              <label className="form-label">CPF</label>
+              <input
+                className="form-control"
+                value={filtroCpf}
+                onChange={(event) => setFiltroCpf(event.target.value)}
+              />
+            </div>
+            <div className="acoes-pesquisa">
+              <button type="button" className="btn btn-outline-secondary" onClick={aplicarFiltro}>
+                Filtrar
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -147,9 +149,9 @@ export default function ListaPessoas() {
       {erro ? <div className="alert alert-danger">{erro}</div> : null}
 
       {loading ? (
-        <div className="nx-card">Carregando...</div>
+        <div className="cartao-cadastro">Carregando...</div>
       ) : pessoasFiltradas.length === 0 ? (
-        <div className="nx-card">Nenhuma pessoa cadastrada</div>
+        <div className="cartao-cadastro">Nenhuma pessoa cadastrada</div>
       ) : (
         <PessoasTable
           pessoas={pessoasPaginadas}
@@ -161,11 +163,11 @@ export default function ListaPessoas() {
       )}
 
       {pessoasFiltradas.length > 0 ? (
-        <div className="nx-footer">
+        <div className="rodape-cadastro">
           <span>{`(${inicio + 1} - ${fim}) - ${totalRegistros}`}</span>
           <button
             type="button"
-            className="btn btn-primary btn-sm nx-page-indicator"
+            className="btn btn-primary btn-sm indicador-paginacao"
             onClick={() =>
               setPaginaAtual((prev) => (prev >= totalPaginas ? 1 : prev + 1))
             }
@@ -186,3 +188,4 @@ export default function ListaPessoas() {
     </div>
   );
 }
+

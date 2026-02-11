@@ -1,28 +1,30 @@
-﻿:root {
-  --nx-bg: #eef2f6;
-  --nx-card: #ffffff;
-  --nx-border: #d6dde6;
-  --nx-text: #2a2f36;
-  --nx-muted: #6b7785;
-  --nx-primary: #1f8ccc;
+:root {
+  --tema-fundo: #eef2f6;
+  --tema-cartao: #ffffff;
+  --tema-borda: #d6dde6;
+  --tema-texto: #2a2f36;
+  --tema-texto-suave: #6b7785;
+  --tema-primaria: #1f8ccc;
 }
 
 body {
-  background: var(--nx-bg);
-  color: var(--nx-text);
+  background: var(--tema-fundo);
+  color: var(--tema-texto);
 }
 
 .btn-primary {
-  background-color: var(--nx-primary);
-  border-color: var(--nx-primary);
+  background-color: var(--tema-primaria);
+  border-color: var(--tema-primaria);
 }
 
 .btn-outline-primary {
-  color: var(--nx-primary);
-  border-color: var(--nx-primary);
+  color: var(--tema-primaria);
+  border-color: var(--tema-primaria);
 }
 
 .btn-outline-primary:hover {
-  background-color: var(--nx-primary);
-  border-color: var(--nx-primary);
+  background-color: var(--tema-primaria);
+  border-color: var(--tema-primaria);
 }
+
+

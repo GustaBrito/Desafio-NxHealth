@@ -1,13 +1,13 @@
-﻿.pessoa-form {
-  background: var(--nx-card);
-  border: 1px solid var(--nx-border);
+.pessoa-form {
+  background: var(--tema-cartao);
+  border: 1px solid var(--tema-borda);
   border-radius: 6px;
   padding: 0;
 }
 
 .pessoa-form-header {
   padding: 14px 18px;
-  border-bottom: 1px solid var(--nx-border);
+  border-bottom: 1px solid var(--tema-borda);
   background: #f3f6fa;
   font-size: 20px;
   font-weight: 600;
@@ -48,7 +48,7 @@
 .pessoa-form-footer {
   margin: 18px;
   padding: 14px;
-  border: 1px solid var(--nx-border);
+  border: 1px solid var(--tema-borda);
   background: #f4f7fa;
   border-radius: 4px;
   display: flex;
@@ -73,3 +73,5 @@
     grid-template-columns: 1fr;
   }
 }
+
+

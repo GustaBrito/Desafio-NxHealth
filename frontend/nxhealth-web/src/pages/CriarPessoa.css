@@ -1,10 +1,12 @@
-﻿.nx-page {
+.pagina-cadastro {
   padding: 24px;
 }
 
-.nx-card {
-  background: var(--nx-card);
-  border: 1px solid var(--nx-border);
+.cartao-cadastro {
+  background: var(--tema-cartao);
+  border: 1px solid var(--tema-borda);
   border-radius: 6px;
   padding: 0;
 }
+
+

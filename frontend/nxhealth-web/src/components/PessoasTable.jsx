@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { aplicarMascaraCpfCnpj } from "../utils/mascaras";
 import "./PessoasTable.css";
 
@@ -18,7 +18,7 @@ export default function PessoasTable({
         return;
       }
       const dentroDoMenu = menuRef.current?.contains(event.target);
-      const dentroDoBotao = event.target.closest?.(".nx-dropdown-toggle");
+      const dentroDoBotao = event.target.closest?.(".botao-menu-acoes");
       if (!dentroDoMenu && !dentroDoBotao) {
         setMenu(null);
       }
@@ -42,10 +42,10 @@ export default function PessoasTable({
 
   function renderSort(coluna) {
     if (ordenacao?.campo !== coluna) {
-      return <span className="nx-sort">↕</span>;
+      return <span className="indicador-ordenacao">^v</span>;
     }
     return (
-      <span className="nx-sort-active">{ordenacao.direcao === "asc" ? "↑" : "↓"}</span>
+      <span className="indicador-ordenacao-ativo">{ordenacao.direcao === "asc" ? "^" : "v"}</span>
     );
   }
 
@@ -91,22 +91,22 @@ export default function PessoasTable({
   }
 
   return (
-    <div className="table-responsive nx-table-wrapper">
-      <table className="table nx-table">
+    <div className="table-responsive tabela-pessoas-wrapper">
+      <table className="table tabela-pessoas">
         <thead>
           <tr>
-            <th className="nx-sortable" onClick={() => onOrdenar("nomeCompleto")}>
-              <button type="button" className="nx-sort-button">
+            <th className="coluna-ordenavel" onClick={() => onOrdenar("nomeCompleto")}>
+              <button type="button" className="botao-ordenacao">
                 Nome {renderSort("nomeCompleto")}
               </button>
             </th>
-            <th className="nx-sortable" onClick={() => onOrdenar("cpfCnpj")}>
-              <button type="button" className="nx-sort-button">
+            <th className="coluna-ordenavel" onClick={() => onOrdenar("cpfCnpj")}>
+              <button type="button" className="botao-ordenacao">
                 CPF/CNPJ {renderSort("cpfCnpj")}
               </button>
             </th>
-            <th className="nx-sortable" onClick={() => onOrdenar("email")}>
-              <button type="button" className="nx-sort-button">
+            <th className="coluna-ordenavel" onClick={() => onOrdenar("email")}>
+              <button type="button" className="botao-ordenacao">
                 E-mail {renderSort("email")}
               </button>
             </th>
@@ -120,13 +120,13 @@ export default function PessoasTable({
               <td>{aplicarMascaraCpfCnpj(pessoa.cpfCnpj)}</td>
               <td>{pessoa.email}</td>
               <td>
-                <div className="nx-dropdown">
+                <div className="menu-acoes">
                   <button
                     type="button"
-                    className="btn btn-sm btn-primary nx-dropdown-toggle"
+                    className="btn btn-sm btn-primary botao-menu-acoes"
                     onClick={(event) => toggleMenu(event, pessoa)}
                   >
-                    ▾
+                    v
                   </button>
                 </div>
               </td>
@@ -138,7 +138,7 @@ export default function PessoasTable({
       {menu ? (
         <div
           ref={menuRef}
-          className="nx-dropdown-menu nx-dropdown-menu-fixed"
+          className="menu-acoes-lista menu-acoes-fixo"
           style={{ top: `${menu.top}px`, left: `${menu.left}px` }}
         >
           <button type="button" onClick={handleEditarSelecionado}>
@@ -152,3 +152,4 @@ export default function PessoasTable({
     </div>
   );
 }
+

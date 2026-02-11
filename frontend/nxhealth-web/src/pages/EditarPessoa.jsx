@@ -62,20 +62,20 @@ export default function EditarPessoa() {
   }
 
   if (loading) {
-    return <div className="nx-page">Carregando...</div>;
+    return <div className="pagina-cadastro">Carregando...</div>;
   }
 
   if (naoEncontrada) {
-    return <div className="nx-page">Pessoa nao encontrada</div>;
+    return <div className="pagina-cadastro">Pessoa nao encontrada</div>;
   }
 
   if (!formData) {
-    return <div className="nx-page">{erro || "Nao foi possivel carregar a pessoa"}</div>;
+    return <div className="pagina-cadastro">{erro || "Nao foi possivel carregar a pessoa"}</div>;
   }
 
   return (
-    <div className="nx-page">
-      <div className="nx-card">
+    <div className="pagina-cadastro">
+      <div className="cartao-cadastro">
         <PessoaForm
           initialValues={formData}
           onSubmit={handleSubmit}
@@ -89,3 +89,4 @@ export default function EditarPessoa() {
     </div>
   );
 }
+
