@@ -1,80 +1,74 @@
-﻿using NxHealth.Api.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using NxHealth.Api.Data;
+using NxHealth.Api.Models;
 
 namespace NxHealth.Api.Repositories;
 
 public class PessoaRepository : IPessoaRepository
 {
-    private static readonly object LockObj = new();
-    private static readonly List<Pessoa> Pessoas = new();
-    private static int _nextId = 1;
+    private readonly AppDbContext _dbContext;
 
-    public Task<IReadOnlyList<Pessoa>> GetAllAsync()
+    public PessoaRepository(AppDbContext dbContext)
     {
-        lock (LockObj)
-        {
-            return Task.FromResult((IReadOnlyList<Pessoa>)Pessoas.Select(Clone).ToList());
-        }
+        _dbContext = dbContext;
     }
 
-    public Task<Pessoa?> GetByIdAsync(int id)
+    public async Task<IReadOnlyList<Pessoa>> GetAllAsync()
     {
-        lock (LockObj)
-        {
-            var pessoa = Pessoas.FirstOrDefault(p => p.Id == id);
-            return Task.FromResult(pessoa is null ? null : Clone(pessoa));
-        }
+        return await _dbContext.Pessoas
+            .AsNoTracking()
+            .OrderBy(x => x.NomeCompleto)
+            .ToListAsync();
     }
 
-    public Task<Pessoa> CreateAsync(Pessoa pessoa)
+    public async Task<Pessoa?> GetByIdAsync(int id)
     {
-        lock (LockObj)
-        {
-            var created = Clone(pessoa);
-            created.Id = _nextId++;
-            Pessoas.Add(created);
-            return Task.FromResult(Clone(created));
-        }
+        return await _dbContext.Pessoas
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public Task<bool> UpdateAsync(Pessoa pessoa)
+    public async Task<Pessoa> CreateAsync(Pessoa pessoa)
     {
-        lock (LockObj)
-        {
-            var index = Pessoas.FindIndex(p => p.Id == pessoa.Id);
-            if (index < 0)
-            {
-                return Task.FromResult(false);
-            }
-
-            Pessoas[index] = Clone(pessoa);
-            return Task.FromResult(true);
-        }
+        _dbContext.Pessoas.Add(pessoa);
+        await _dbContext.SaveChangesAsync();
+        return pessoa;
     }
 
-    public Task<bool> DeleteAsync(int id)
+    public async Task<bool> UpdateAsync(Pessoa pessoa)
     {
-        lock (LockObj)
+        var existente = await _dbContext.Pessoas.FirstOrDefaultAsync(x => x.Id == pessoa.Id);
+        if (existente is null)
         {
-            var index = Pessoas.FindIndex(p => p.Id == id);
-            if (index < 0)
-            {
-                return Task.FromResult(false);
-            }
-
-            Pessoas.RemoveAt(index);
-            return Task.FromResult(true);
+            return false;
         }
+
+        existente.NomeCompleto = pessoa.NomeCompleto;
+        existente.TipoPessoa = pessoa.TipoPessoa;
+        existente.CpfCnpj = pessoa.CpfCnpj;
+        existente.Telefone = pessoa.Telefone;
+        existente.Email = pessoa.Email;
+        existente.Cep = pessoa.Cep;
+        existente.Endereco = pessoa.Endereco;
+        existente.Logradouro = pessoa.Logradouro;
+        existente.Bairro = pessoa.Bairro;
+        existente.Cidade = pessoa.Cidade;
+        existente.Uf = pessoa.Uf;
+
+        await _dbContext.SaveChangesAsync();
+        return true;
     }
 
-    private static Pessoa Clone(Pessoa pessoa)
+    public async Task<bool> DeleteAsync(int id)
     {
-        return new Pessoa
+        var existente = await _dbContext.Pessoas.FirstOrDefaultAsync(x => x.Id == id);
+        if (existente is null)
         {
-            Id = pessoa.Id,
-            NomeCompleto = pessoa.NomeCompleto,
-            CpfCnpj = pessoa.CpfCnpj,
-            Telefone = pessoa.Telefone,
-            Email = pessoa.Email
-        };
+            return false;
+        }
+
+        _dbContext.Pessoas.Remove(existente);
+        await _dbContext.SaveChangesAsync();
+        return true;
     }
 }

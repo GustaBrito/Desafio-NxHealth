@@ -42,8 +42,15 @@ public class PessoasController : ControllerBase
             return ValidationProblem(ModelState);
         }
 
-        var created = await _service.CreateAsync(request);
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        try
+        {
+            var created = await _service.CreateAsync(request);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        }
+        catch (CpfCnpjDuplicadoException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
     }
 
     [HttpPut("{id:int}")]
@@ -54,13 +61,20 @@ public class PessoasController : ControllerBase
             return ValidationProblem(ModelState);
         }
 
-        var updated = await _service.UpdateAsync(id, request);
-        if (!updated)
+        try
         {
-            return NotFound();
-        }
+            var updated = await _service.UpdateAsync(id, request);
+            if (!updated)
+            {
+                return NotFound();
+            }
 
-        return NoContent();
+            return NoContent();
+        }
+        catch (CpfCnpjDuplicadoException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
     }
 
     [HttpDelete("{id:int}")]
