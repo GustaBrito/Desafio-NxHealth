@@ -1,63 +1,76 @@
-﻿export async function listarPessoas() {
-  const response = await fetch("/api/pessoas");
-  if (!response.ok) {
-    const errorBody = await response.json().catch(() => null);
-    const error = new Error("Falha ao listar pessoas");
-    error.details = errorBody;
-    throw error;
+async function parseErrorBody(response) {
+  const contentType = response.headers.get("content-type") || "";
+
+  if (!contentType.includes("application/json")) {
+    return null;
   }
-  return response.json();
+
+  return response.json().catch(() => null);
 }
 
-export async function obterPessoa(id) {
-  const response = await fetch(`/api/pessoas/${id}`);
-  if (!response.ok) {
-    const errorBody = await response.json().catch(() => null);
-    const error = new Error("Falha ao obter pessoa");
-    error.details = errorBody;
-    throw error;
-  }
-  return response.json();
+async function createHttpError(response, fallbackMessage) {
+  const errorBody = await parseErrorBody(response);
+  const error = new Error(fallbackMessage);
+  error.details = errorBody;
+  error.status = response.status;
+  error.url = response.url;
+  return error;
 }
 
-export async function criarPessoa(payload) {
-  const response = await fetch("/api/pessoas", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
+async function requestJson(url, options, fallbackMessage) {
+  const response = await fetch(url, options);
 
   if (!response.ok) {
-    const errorBody = await response.json().catch(() => null);
-    const error = new Error("Falha ao criar pessoa");
-    error.details = errorBody;
-    throw error;
+    throw await createHttpError(response, fallbackMessage);
   }
 
   return response.json();
 }
 
-export async function atualizarPessoa(id, payload) {
-  const response = await fetch(`/api/pessoas/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
+async function requestWithoutBody(url, options, fallbackMessage) {
+  const response = await fetch(url, options);
 
   if (!response.ok) {
-    const errorBody = await response.json().catch(() => null);
-    const error = new Error("Falha ao atualizar pessoa");
-    error.details = errorBody;
-    throw error;
+    throw await createHttpError(response, fallbackMessage);
   }
 }
 
-export async function excluirPessoa(id) {
-  const response = await fetch(`/api/pessoas/${id}`, { method: "DELETE" });
-  if (!response.ok) {
-    const errorBody = await response.json().catch(() => null);
-    const error = new Error("Falha ao excluir pessoa");
-    error.details = errorBody;
-    throw error;
-  }
+export function listarPessoas() {
+  return requestJson("/api/pessoas", undefined, "Falha ao listar pessoas");
+}
+
+export function obterPessoa(id) {
+  return requestJson(`/api/pessoas/${id}`, undefined, "Falha ao obter pessoa");
+}
+
+export function criarPessoa(payload) {
+  return requestJson(
+    "/api/pessoas",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    },
+    "Falha ao criar pessoa"
+  );
+}
+
+export function atualizarPessoa(id, payload) {
+  return requestWithoutBody(
+    `/api/pessoas/${id}`,
+    {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    },
+    "Falha ao atualizar pessoa"
+  );
+}
+
+export function excluirPessoa(id) {
+  return requestWithoutBody(
+    `/api/pessoas/${id}`,
+    { method: "DELETE" },
+    "Falha ao excluir pessoa"
+  );
 }

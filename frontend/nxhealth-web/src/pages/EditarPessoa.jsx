@@ -1,8 +1,10 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PessoaForm from "../components/PessoaForm";
 import { atualizarPessoa, obterPessoa } from "../api/pessoasApi";
-import { extrairMensagemErroApi } from "../utils/errosApi";
+import { extrairErrosCamposApi, extrairMensagemErroApi } from "../utils/errosApi";
+import { mapPessoaApiToForm } from "../utils/pessoaFormConfig";
+import "./EditarPessoa.css";
 
 export default function EditarPessoa() {
   const { id } = useParams();
@@ -10,6 +12,8 @@ export default function EditarPessoa() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [erro, setErro] = useState("");
+  const [naoEncontrada, setNaoEncontrada] = useState(false);
+  const [errosCampoApi, setErrosCampoApi] = useState({});
   const [formData, setFormData] = useState(null);
 
   useEffect(() => {
@@ -19,15 +23,20 @@ export default function EditarPessoa() {
   async function carregarPessoa() {
     try {
       setLoading(true);
+      setErro("");
+      setNaoEncontrada(false);
+
       const data = await obterPessoa(id);
-      setFormData({
-        nomeCompleto: data.nomeCompleto,
-        cpfCnpj: data.cpfCnpj,
-        telefone: data.telefone,
-        email: data.email
-      });
+      setFormData(mapPessoaApiToForm(data));
     } catch (error) {
+      if (error?.status === 404) {
+        setNaoEncontrada(true);
+        setFormData(null);
+        return;
+      }
+
       setErro(extrairMensagemErroApi(error, "Nao foi possivel carregar a pessoa"));
+      setFormData(null);
     } finally {
       setLoading(false);
     }
@@ -36,33 +45,47 @@ export default function EditarPessoa() {
   async function handleSubmit(values) {
     try {
       setSaving(true);
+      setErro("");
+      setErrosCampoApi({});
       await atualizarPessoa(id, values);
       navigate("/pessoas");
     } catch (error) {
-      setErro(extrairMensagemErroApi(error, "Nao foi possivel atualizar a pessoa"));
+      const campo = extrairErrosCamposApi(error);
+      setErrosCampoApi(campo);
+
+      if (Object.keys(campo).length === 0) {
+        setErro(extrairMensagemErroApi(error, "Nao foi possivel atualizar a pessoa"));
+      }
     } finally {
       setSaving(false);
     }
   }
 
   if (loading) {
-    return <div className="container py-4">Carregando...</div>;
+    return <div className="nx-page">Carregando...</div>;
+  }
+
+  if (naoEncontrada) {
+    return <div className="nx-page">Pessoa nao encontrada</div>;
   }
 
   if (!formData) {
-    return <div className="container py-4">Pessoa nao encontrada</div>;
+    return <div className="nx-page">{erro || "Nao foi possivel carregar a pessoa"}</div>;
   }
 
   return (
-    <div className="container py-4">
-      <h1 className="h3 mb-3">Editar pessoa</h1>
-      {erro ? <div className="alert alert-danger">{erro}</div> : null}
-      <PessoaForm
-        initialValues={formData}
-        onSubmit={handleSubmit}
-        submitLabel="Salvar alteracoes"
-        loading={saving}
-      />
+    <div className="nx-page">
+      <div className="nx-card">
+        <PessoaForm
+          initialValues={formData}
+          onSubmit={handleSubmit}
+          submitLabel="Gravar"
+          loading={saving}
+          apiErrors={erro}
+          apiFieldErrors={errosCampoApi}
+          onFechar={() => navigate("/pessoas")}
+        />
+      </div>
     </div>
   );
 }
