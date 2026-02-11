@@ -1,43 +1,49 @@
-﻿import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import PessoaForm from "../components/PessoaForm";
 import { criarPessoa } from "../api/pessoasApi";
-import { extrairMensagemErroApi } from "../utils/errosApi";
+import { extrairErrosCamposApi, extrairMensagemErroApi } from "../utils/errosApi";
+import { FORM_EMPTY_VALUES } from "../utils/pessoaFormConfig";
+import "./CriarPessoa.css";
 
 export default function CriarPessoa() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
-
-  const initialValues = {
-    nomeCompleto: "",
-    cpfCnpj: "",
-    telefone: "",
-    email: ""
-  };
+  const [errosCampoApi, setErrosCampoApi] = useState({});
 
   async function handleSubmit(values) {
     try {
       setLoading(true);
+      setErro("");
+      setErrosCampoApi({});
       await criarPessoa(values);
       navigate("/pessoas");
     } catch (error) {
-      setErro(extrairMensagemErroApi(error, "Nao foi possivel criar a pessoa"));
+      const campo = extrairErrosCamposApi(error);
+      setErrosCampoApi(campo);
+
+      if (Object.keys(campo).length === 0) {
+        setErro(extrairMensagemErroApi(error, "Nao foi possivel criar a pessoa"));
+      }
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="container py-4">
-      <h1 className="h3 mb-3">Nova pessoa</h1>
-      <PessoaForm
-        initialValues={initialValues}
-        onSubmit={handleSubmit}
-        submitLabel="Salvar"
-        loading={loading}
-        apiErrors={erro}
-      />
+    <div className="nx-page">
+      <div className="nx-card">
+        <PessoaForm
+          initialValues={FORM_EMPTY_VALUES}
+          onSubmit={handleSubmit}
+          submitLabel="Gravar"
+          loading={loading}
+          apiErrors={erro}
+          apiFieldErrors={errosCampoApi}
+          onFechar={() => navigate("/pessoas")}
+        />
+      </div>
     </div>
   );
 }

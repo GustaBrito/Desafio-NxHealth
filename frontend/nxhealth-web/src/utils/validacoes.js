@@ -1,4 +1,6 @@
-﻿function somenteDigitos(valor) {
+import { UF_OPCOES } from "./pessoaFormConfig";
+
+function somenteDigitos(valor) {
   return (valor || "").replace(/\D/g, "");
 }
 
@@ -8,12 +10,15 @@ function possuiDigitosIguais(digits) {
 
 function validarCpfCnpj(valor) {
   const digits = somenteDigitos(valor);
+
   if (digits.length !== 11 && digits.length !== 14) {
     return false;
   }
+
   if (possuiDigitosIguais(digits)) {
     return false;
   }
+
   return true;
 }
 
@@ -28,11 +33,22 @@ function validarEmail(valor) {
   return regex.test(email);
 }
 
+function validarCep(valor) {
+  const digits = somenteDigitos(valor);
+  return digits.length === 8;
+}
+
+const UFS_VALIDAS = new Set(UF_OPCOES);
+
 export function validarPessoa(payload) {
   const erros = {};
 
   if (!payload.nomeCompleto?.trim()) {
     erros.nomeCompleto = "Nome completo e obrigatorio";
+  }
+
+  if (!payload.tipoPessoa?.trim()) {
+    erros.tipoPessoa = "Tipo da pessoa e obrigatorio";
   }
 
   if (!payload.cpfCnpj?.trim()) {
@@ -51,6 +67,34 @@ export function validarPessoa(payload) {
     erros.email = "E-mail e obrigatorio";
   } else if (!validarEmail(payload.email)) {
     erros.email = "E-mail invalido";
+  }
+
+  if (!payload.cep?.trim()) {
+    erros.cep = "CEP e obrigatorio";
+  } else if (!validarCep(payload.cep)) {
+    erros.cep = "CEP invalido";
+  }
+
+  if (!payload.endereco?.trim()) {
+    erros.endereco = "Endereco e obrigatorio";
+  }
+
+  if (!payload.logradouro?.trim()) {
+    erros.logradouro = "Logradouro e obrigatorio";
+  }
+
+  if (!payload.bairro?.trim()) {
+    erros.bairro = "Bairro e obrigatorio";
+  }
+
+  if (!payload.cidade?.trim()) {
+    erros.cidade = "Cidade e obrigatoria";
+  }
+
+  if (!payload.uf?.trim()) {
+    erros.uf = "UF e obrigatoria";
+  } else if (!UFS_VALIDAS.has(payload.uf.trim().toUpperCase())) {
+    erros.uf = "UF invalida";
   }
 
   return erros;
