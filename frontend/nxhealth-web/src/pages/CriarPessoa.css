@@ -1,0 +1,10 @@
+﻿.nx-page {
+  padding: 24px;
+}
+
+.nx-card {
+  background: var(--nx-card);
+  border: 1px solid var(--nx-border);
+  border-radius: 6px;
+  padding: 0;
+}

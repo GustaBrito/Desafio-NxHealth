@@ -1,4 +1,6 @@
-﻿export default function ConfirmModal({
+﻿import "./ConfirmModal.css";
+
+export default function ConfirmModal({
   aberto,
   titulo,
   mensagem,
@@ -10,7 +12,7 @@
   }
 
   return (
-    <div className="modal d-block" tabIndex="-1" role="dialog">
+    <div className="modal d-block confirm-modal" tabIndex="-1" role="dialog">
       <div className="modal-dialog" role="document">
         <div className="modal-content">
           <div className="modal-header">

@@ -36,3 +36,13 @@ export function aplicarMascaraTelefone(valor) {
   if (parte2) result += `-${parte2}`;
   return result.trim();
 }
+
+export function aplicarMascaraCep(valor) {
+  const digits = (valor || "").replace(/\D/g, "").slice(0, 8);
+  const part1 = digits.slice(0, 5);
+  const part2 = digits.slice(5, 8);
+  if (!part2) {
+    return part1;
+  }
+  return `${part1}-${part2}`;
+}

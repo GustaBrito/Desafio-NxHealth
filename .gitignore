@@ -8,6 +8,11 @@
 # Vite
 **/dist/
 
+# SQLite local
+*.db
+*.db-shm
+*.db-wal
+
 # OS
 .DS_Store
 Thumbs.db

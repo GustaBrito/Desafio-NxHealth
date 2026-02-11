@@ -1,0 +1,75 @@
+﻿.pessoa-form {
+  background: var(--nx-card);
+  border: 1px solid var(--nx-border);
+  border-radius: 6px;
+  padding: 0;
+}
+
+.pessoa-form-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--nx-border);
+  background: #f3f6fa;
+  font-size: 20px;
+  font-weight: 600;
+  color: #3b4450;
+}
+
+.pessoa-grid {
+  display: grid;
+  gap: 14px;
+  padding: 14px 18px 0;
+}
+
+.pessoa-grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.pessoa-grid-3 {
+  grid-template-columns: 1.4fr 1.1fr 0.7fr;
+}
+
+.pessoa-grid-4 {
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.pessoa-form .form-label {
+  font-weight: 600;
+  color: #38414c;
+  margin-bottom: 6px;
+}
+
+.pessoa-form .form-control,
+.pessoa-form .form-select {
+  min-height: 46px;
+  border-radius: 2px;
+  border-color: #cad4df;
+}
+
+.pessoa-form-footer {
+  margin: 18px;
+  padding: 14px;
+  border: 1px solid var(--nx-border);
+  background: #f4f7fa;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pessoa-form-footer-right {
+  display: flex;
+  gap: 10px;
+}
+
+.pessoa-form-footer-left {
+  display: flex;
+  gap: 10px;
+}
+
+@media (max-width: 992px) {
+  .pessoa-grid-4,
+  .pessoa-grid-3,
+  .pessoa-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
