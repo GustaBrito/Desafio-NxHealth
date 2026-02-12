@@ -47,10 +47,6 @@ export function validarPessoa(payload) {
     erros.nomeCompleto = "Nome completo e obrigatorio";
   }
 
-  if (!payload.tipoPessoa?.trim()) {
-    erros.tipoPessoa = "Tipo da pessoa e obrigatorio";
-  }
-
   if (!payload.cpfCnpj?.trim()) {
     erros.cpfCnpj = "CPF/CNPJ e obrigatorio";
   } else if (!validarCpfCnpj(payload.cpfCnpj)) {
@@ -69,31 +65,11 @@ export function validarPessoa(payload) {
     erros.email = "E-mail invalido";
   }
 
-  if (!payload.cep?.trim()) {
-    erros.cep = "CEP e obrigatorio";
-  } else if (!validarCep(payload.cep)) {
+  if (payload.cep?.trim() && !validarCep(payload.cep)) {
     erros.cep = "CEP invalido";
   }
 
-  if (!payload.endereco?.trim()) {
-    erros.endereco = "Endereco e obrigatorio";
-  }
-
-  if (!payload.logradouro?.trim()) {
-    erros.logradouro = "Logradouro e obrigatorio";
-  }
-
-  if (!payload.bairro?.trim()) {
-    erros.bairro = "Bairro e obrigatorio";
-  }
-
-  if (!payload.cidade?.trim()) {
-    erros.cidade = "Cidade e obrigatoria";
-  }
-
-  if (!payload.uf?.trim()) {
-    erros.uf = "UF e obrigatoria";
-  } else if (!UFS_VALIDAS.has(payload.uf.trim().toUpperCase())) {
+  if (payload.uf?.trim() && !UFS_VALIDAS.has(payload.uf.trim().toUpperCase())) {
     erros.uf = "UF invalida";
   }
 

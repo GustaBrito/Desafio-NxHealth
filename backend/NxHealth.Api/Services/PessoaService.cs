@@ -67,16 +67,16 @@ public class PessoaService : IPessoaService
         {
             Id = id,
             NomeCompleto = request.NomeCompleto ?? string.Empty,
-            TipoPessoa = request.TipoPessoa ?? string.Empty,
+            TipoPessoa = NormalizeOptionalText(request.TipoPessoa),
             CpfCnpj = NormalizarDigitos(request.CpfCnpj),
             Telefone = request.Telefone ?? string.Empty,
             Email = request.Email ?? string.Empty,
-            Cep = request.Cep ?? string.Empty,
-            Endereco = request.Endereco ?? string.Empty,
-            Logradouro = request.Logradouro ?? string.Empty,
-            Bairro = request.Bairro ?? string.Empty,
-            Cidade = request.Cidade ?? string.Empty,
-            Uf = (request.Uf ?? string.Empty).ToUpperInvariant()
+            Cep = NormalizeOptionalText(request.Cep),
+            Endereco = NormalizeOptionalText(request.Endereco),
+            Logradouro = NormalizeOptionalText(request.Logradouro),
+            Bairro = NormalizeOptionalText(request.Bairro),
+            Cidade = NormalizeOptionalText(request.Cidade),
+            Uf = NormalizeOptionalUf(request.Uf)
         };
     }
 
@@ -102,6 +102,18 @@ public class PessoaService : IPessoaService
     private static string NormalizarDigitos(string valor)
     {
         return new string((valor ?? string.Empty).Where(char.IsDigit).ToArray());
+    }
+
+    private static string? NormalizeOptionalText(string? value)
+    {
+        var trimmed = value?.Trim();
+        return string.IsNullOrWhiteSpace(trimmed) ? null : trimmed;
+    }
+
+    private static string? NormalizeOptionalUf(string? value)
+    {
+        var normalized = NormalizeOptionalText(value);
+        return normalized?.ToUpperInvariant();
     }
 
     private static bool IsCpfCnpjUniqueViolation(DbUpdateException exception)

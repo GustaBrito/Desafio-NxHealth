@@ -1,3 +1,12 @@
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000").replace(
+  /\/+$/,
+  ""
+);
+
+function buildApiUrl(path) {
+  return API_BASE_URL ? `${API_BASE_URL}${path}` : path;
+}
+
 async function parseErrorBody(response) {
   const contentType = response.headers.get("content-type") || "";
 
@@ -24,7 +33,22 @@ async function requestJson(url, options, fallbackMessage) {
     throw await createHttpError(response, fallbackMessage);
   }
 
-  return response.json();
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.includes("application/json")) {
+    throw Object.assign(new Error(fallbackMessage), {
+      status: response.status,
+      url: response.url
+    });
+  }
+
+  try {
+    return await response.json();
+  } catch {
+    throw Object.assign(new Error(fallbackMessage), {
+      status: response.status,
+      url: response.url
+    });
+  }
 }
 
 async function requestWithoutBody(url, options, fallbackMessage) {
@@ -36,16 +60,16 @@ async function requestWithoutBody(url, options, fallbackMessage) {
 }
 
 export function listarPessoas() {
-  return requestJson("/api/pessoas", undefined, "Falha ao listar pessoas");
+  return requestJson(buildApiUrl("/api/pessoas"), undefined, "Falha ao listar pessoas");
 }
 
 export function obterPessoa(id) {
-  return requestJson(`/api/pessoas/${id}`, undefined, "Falha ao obter pessoa");
+  return requestJson(buildApiUrl(`/api/pessoas/${id}`), undefined, "Falha ao obter pessoa");
 }
 
 export function criarPessoa(payload) {
   return requestJson(
-    "/api/pessoas",
+    buildApiUrl("/api/pessoas"),
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -57,7 +81,7 @@ export function criarPessoa(payload) {
 
 export function atualizarPessoa(id, payload) {
   return requestWithoutBody(
-    `/api/pessoas/${id}`,
+    buildApiUrl(`/api/pessoas/${id}`),
     {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -69,7 +93,7 @@ export function atualizarPessoa(id, payload) {
 
 export function excluirPessoa(id) {
   return requestWithoutBody(
-    `/api/pessoas/${id}`,
+    buildApiUrl(`/api/pessoas/${id}`),
     { method: "DELETE" },
     "Falha ao excluir pessoa"
   );

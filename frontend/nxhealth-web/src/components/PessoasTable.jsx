@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from "react";
 import { aplicarMascaraCpfCnpj } from "../utils/mascaras";
 import "./PessoasTable.css";
 
@@ -9,37 +8,6 @@ export default function PessoasTable({
   ordenacao,
   onOrdenar
 }) {
-  const [menu, setMenu] = useState(null);
-  const menuRef = useRef(null);
-
-  useEffect(() => {
-    function handleClickFora(event) {
-      if (!menu) {
-        return;
-      }
-      const dentroDoMenu = menuRef.current?.contains(event.target);
-      const dentroDoBotao = event.target.closest?.(".botao-menu-acoes");
-      if (!dentroDoMenu && !dentroDoBotao) {
-        setMenu(null);
-      }
-    }
-
-    function handleViewportChange() {
-      if (menu) {
-        setMenu(null);
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickFora);
-    window.addEventListener("scroll", handleViewportChange, true);
-    window.addEventListener("resize", handleViewportChange);
-    return () => {
-      document.removeEventListener("mousedown", handleClickFora);
-      window.removeEventListener("scroll", handleViewportChange, true);
-      window.removeEventListener("resize", handleViewportChange);
-    };
-  }, [menu]);
-
   function renderSort(coluna) {
     if (ordenacao?.campo !== coluna) {
       return <span className="indicador-ordenacao">^v</span>;
@@ -47,47 +15,6 @@ export default function PessoasTable({
     return (
       <span className="indicador-ordenacao-ativo">{ordenacao.direcao === "asc" ? "^" : "v"}</span>
     );
-  }
-
-  function toggleMenu(event, pessoa) {
-    if (menu?.id === pessoa.id) {
-      setMenu(null);
-      return;
-    }
-
-    const rect = event.currentTarget.getBoundingClientRect();
-    const larguraMenu = 136;
-    const alturaMenu = 86;
-    const margem = 8;
-
-    const leftBruto = rect.left - larguraMenu;
-    const topBruto = rect.top;
-
-    const left = Math.max(margem, Math.min(leftBruto, window.innerWidth - larguraMenu - margem));
-    const top = Math.max(margem, Math.min(topBruto, window.innerHeight - alturaMenu - margem));
-
-    setMenu({
-      id: pessoa.id,
-      pessoa,
-      top,
-      left
-    });
-  }
-
-  function handleEditarSelecionado() {
-    if (!menu) {
-      return;
-    }
-    onEditar(menu.pessoa);
-    setMenu(null);
-  }
-
-  function handleExcluirSelecionado() {
-    if (!menu) {
-      return;
-    }
-    onExcluir(menu.pessoa);
-    setMenu(null);
   }
 
   return (
@@ -110,7 +37,7 @@ export default function PessoasTable({
                 E-mail {renderSort("email")}
               </button>
             </th>
-            <th>Opcoes</th>
+            <th>Acoes</th>
           </tr>
         </thead>
         <tbody>
@@ -120,13 +47,28 @@ export default function PessoasTable({
               <td>{aplicarMascaraCpfCnpj(pessoa.cpfCnpj)}</td>
               <td>{pessoa.email}</td>
               <td>
-                <div className="menu-acoes">
+                <div className="acoes-linha">
                   <button
                     type="button"
-                    className="btn btn-sm btn-primary botao-menu-acoes"
-                    onClick={(event) => toggleMenu(event, pessoa)}
+                    className="btn btn-sm btn-outline-primary botao-acao"
+                    title="Editar"
+                    aria-label="Editar"
+                    onClick={() => onEditar(pessoa)}
                   >
-                    v
+                    <svg viewBox="0 0 16 16" aria-hidden="true">
+                      <path d="M12.85 1.15a1.5 1.5 0 0 1 2.12 2.12l-8.9 8.9-3.29.98a.75.75 0 0 1-.93-.93l.98-3.29 8.9-8.9zm1.06 1.06a.5.5 0 0 0-.7 0l-1.08 1.08 1.76 1.76 1.08-1.08a.5.5 0 0 0 0-.7l-1.06-1.06zM11.07 4.35 3.48 11.94l-.55 1.84 1.84-.55 7.59-7.59-1.29-1.29z" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-danger botao-acao"
+                    title="Excluir"
+                    aria-label="Excluir"
+                    onClick={() => onExcluir(pessoa)}
+                  >
+                    <svg viewBox="0 0 16 16" aria-hidden="true">
+                      <path d="M6.5 1a1 1 0 0 0-1 1V3H3a.5.5 0 0 0 0 1h.5l.62 9.07A2 2 0 0 0 6.12 15h3.76a2 2 0 0 0 2-1.93L12.5 4H13a.5.5 0 0 0 0-1H10.5V2a1 1 0 0 0-1-1h-3zm3 2h-3V2h3v1zm-4.37 1h5.74l-.6 8.98a1 1 0 0 1-1 .96H6.73a1 1 0 0 1-1-.96L5.13 4z" />
+                    </svg>
                   </button>
                 </div>
               </td>
@@ -134,21 +76,6 @@ export default function PessoasTable({
           ))}
         </tbody>
       </table>
-
-      {menu ? (
-        <div
-          ref={menuRef}
-          className="menu-acoes-lista menu-acoes-fixo"
-          style={{ top: `${menu.top}px`, left: `${menu.left}px` }}
-        >
-          <button type="button" onClick={handleEditarSelecionado}>
-            Editar
-          </button>
-          <button type="button" onClick={handleExcluirSelecionado}>
-            Excluir
-          </button>
-        </div>
-      ) : null}
     </div>
   );
 }

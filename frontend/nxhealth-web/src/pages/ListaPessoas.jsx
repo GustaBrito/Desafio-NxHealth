@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ConfirmModal from "../components/ConfirmModal";
 import PessoasTable from "../components/PessoasTable";
@@ -19,6 +19,9 @@ export default function ListaPessoas() {
   const [filtroCpf, setFiltroCpf] = useState("");
   const [aplicado, setAplicado] = useState({ nome: "", cpf: "" });
   const [paginaAtual, setPaginaAtual] = useState(1);
+  const [paginaDigitada, setPaginaDigitada] = useState("");
+  const [inicioJanelaPaginas, setInicioJanelaPaginas] = useState(1);
+  const paginaAnteriorRef = useRef(1);
   const tamanhoPagina = 10;
   const [ordenacao, setOrdenacao] = useState({
     campo: "nomeCompleto",
@@ -104,6 +107,44 @@ export default function ListaPessoas() {
   const inicio = (paginaNormalizada - 1) * tamanhoPagina;
   const fim = Math.min(inicio + tamanhoPagina, totalRegistros);
   const pessoasPaginadas = pessoasOrdenadas.slice(inicio, fim);
+  const semRegistros = pessoas.length === 0;
+  const maximoBotoes = 3;
+  const maxInicioJanela = Math.max(1, totalPaginas - (maximoBotoes - 1));
+  const fimJanelaPaginas = Math.min(totalPaginas, inicioJanelaPaginas + (maximoBotoes - 1));
+  const paginasVisiveis = [];
+
+  for (let pagina = inicioJanelaPaginas; pagina <= fimJanelaPaginas; pagina++) {
+    paginasVisiveis.push(pagina);
+  }
+
+  useEffect(() => {
+    const paginaAnterior = paginaAnteriorRef.current;
+
+    setInicioJanelaPaginas((inicioAtual) => {
+      let proximoInicio = inicioAtual;
+
+      if (paginaNormalizada > paginaAnterior) {
+        proximoInicio = Math.min(paginaNormalizada, maxInicioJanela);
+      } else if (paginaNormalizada < paginaAnterior) {
+        proximoInicio = Math.max(1, Math.min(paginaNormalizada - 1, maxInicioJanela));
+      }
+
+      return Math.max(1, Math.min(proximoInicio, maxInicioJanela));
+    });
+
+    paginaAnteriorRef.current = paginaNormalizada;
+  }, [paginaNormalizada, maxInicioJanela]);
+
+  function irParaPaginaDigitada() {
+    const alvo = Number(paginaDigitada);
+    if (!Number.isInteger(alvo)) {
+      return;
+    }
+    if (alvo < 1 || alvo > totalPaginas) {
+      return;
+    }
+    setPaginaAtual(alvo);
+  }
 
   return (
     <div className="pagina-cadastro">
@@ -151,7 +192,14 @@ export default function ListaPessoas() {
       {loading ? (
         <div className="cartao-cadastro">Carregando...</div>
       ) : pessoasFiltradas.length === 0 ? (
-        <div className="cartao-cadastro">Nenhuma pessoa cadastrada</div>
+        <div className="cartao-cadastro estado-vazio">
+          <h3>{semRegistros ? "Nenhuma pessoa cadastrada" : "Nenhum resultado encontrado"}</h3>
+          <p>
+            {semRegistros
+              ? "Cadastre a primeira pessoa para iniciar sua base."
+              : "Ajuste os filtros de pesquisa para visualizar os registros."}
+          </p>
+        </div>
       ) : (
         <PessoasTable
           pessoas={pessoasPaginadas}
@@ -165,16 +213,45 @@ export default function ListaPessoas() {
       {pessoasFiltradas.length > 0 ? (
         <div className="rodape-cadastro">
           <span>{`(${inicio + 1} - ${fim}) - ${totalRegistros}`}</span>
-          <button
-            type="button"
-            className="btn btn-primary btn-sm indicador-paginacao"
-            onClick={() =>
-              setPaginaAtual((prev) => (prev >= totalPaginas ? 1 : prev + 1))
-            }
-            disabled={totalPaginas === 1}
-          >
-            {`${paginaNormalizada}/${totalPaginas} (${totalRegistros})`}
-          </button>
+          <div className="controle-paginacao">
+            <div className="ir-para-pagina">
+              <input
+                type="number"
+                min="1"
+                max={totalPaginas}
+                className="form-control form-control-sm"
+                placeholder="Pagina"
+                value={paginaDigitada}
+                onChange={(event) => setPaginaDigitada(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    irParaPaginaDigitada();
+                  }
+                }}
+              />
+              <button
+                type="button"
+                className="btn btn-outline-secondary btn-sm"
+                onClick={irParaPaginaDigitada}
+              >
+                Ir
+              </button>
+            </div>
+            <div className="botoes-paginacao">
+              {paginasVisiveis.map((pagina) => (
+                <button
+                  key={pagina}
+                  type="button"
+                  className={`btn btn-sm ${
+                    pagina === paginaNormalizada ? "btn-primary" : "btn-outline-primary"
+                  } indicador-paginacao`}
+                  onClick={() => setPaginaAtual(pagina)}
+                >
+                  {pagina}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       ) : null}
 

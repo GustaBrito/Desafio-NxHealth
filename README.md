@@ -16,6 +16,7 @@ Aplicacao de cadastro de pessoas com CRUD completo, utilizando frontend em React
 - Edicao de pessoa com formulario preenchido a partir dos dados existentes.
 - Redirecionamento para listagem apos criar e apos editar.
 - Exclusao com modal de confirmacao antes de remover da lista.
+- Campos extras (TipoPessoa, CEP, Endereco, Logradouro, Bairro, Cidade e UF) disponiveis como opcionais.
 
 ## Implementacoes extras
 
@@ -45,5 +46,6 @@ dotnet run
 ```bash
 cd frontend/nxhealth-web
 npm install
+# opcional: criar .env com VITE_API_BASE_URL quando a API nao estiver em http://localhost:5000
 npm start
 ```

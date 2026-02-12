@@ -19,16 +19,16 @@ Colunas:
 
 - `Id` - `INTEGER` - PK - autoincrement
 - `NomeCompleto` - `TEXT` - obrigatorio - max 150
-- `TipoPessoa` - `TEXT` - obrigatorio - max 30
+- `TipoPessoa` - `TEXT` - opcional - max 30
 - `CpfCnpj` - `TEXT` - obrigatorio - max 18
 - `Telefone` - `TEXT` - obrigatorio - max 20
 - `Email` - `TEXT` - obrigatorio - max 120
-- `Cep` - `TEXT` - obrigatorio - max 9
-- `Endereco` - `TEXT` - obrigatorio - max 150
-- `Logradouro` - `TEXT` - obrigatorio - max 120
-- `Bairro` - `TEXT` - obrigatorio - max 120
-- `Cidade` - `TEXT` - obrigatorio - max 120
-- `Uf` - `TEXT` - obrigatorio - max 2
+- `Cep` - `TEXT` - opcional - max 9
+- `Endereco` - `TEXT` - opcional - max 150
+- `Logradouro` - `TEXT` - opcional - max 120
+- `Bairro` - `TEXT` - opcional - max 120
+- `Cidade` - `TEXT` - opcional - max 120
+- `Uf` - `TEXT` - opcional - max 2
 
 Indice:
 
@@ -37,8 +37,10 @@ Indice:
 ## Regras relevantes no backend
 
 - O service normaliza `CpfCnpj` para apenas digitos antes de salvar.
+- Campos opcionais vazios sao persistidos como `NULL`.
 - Quando ocorre violacao de unicidade de `CpfCnpj`, a API retorna `409 Conflict`.
-- O contrato de entrada da API segue os mesmos campos obrigatorios persistidos no banco.
+- O contrato de entrada exige apenas os 4 campos obrigatorios do desafio:
+  `NomeCompleto`, `CpfCnpj`, `Telefone`, `Email`.
 
 ## Migrations
 
